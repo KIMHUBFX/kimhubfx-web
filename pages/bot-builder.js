@@ -66,7 +66,7 @@ function saveBot() {
 function renderBots() {
   const container = document.getElementById('botContainer');
   container.innerHTML = '';
-  botCharts = []; // reset charts
+  botCharts = [];
 
   bots.forEach((bot, index) => {
     const card = document.createElement('div');
@@ -78,7 +78,7 @@ function renderBots() {
       <p><strong>Stop-Loss:</strong> $${bot.stopLoss}</p>
       <p><strong>Volatility:</strong> ${bot.volatility}%</p>
       <p><strong>Status:</strong> <span class="status">${bot.status}</span></p>
-      <canvas id="botChart${index}" class="bot-chart"></canvas>
+      <canvas id="botChart${index}" class="bot-chart" height="100"></canvas>
       <div class="bot-actions">
         <button onclick="startBot(${index})">Start</button>
         <button onclick="stopBot(${index})">Stop</button>
@@ -87,12 +87,41 @@ function renderBots() {
       </div>`;
     container.appendChild(card);
 
-    // Initialize chart
     const ctx = document.getElementById(`botChart${index}`).getContext('2d');
     bot.chart = new Chart(ctx, {
       type: 'line',
-      data: { labels: [], datasets: [{ label: 'Profit/Loss', data: [], borderColor: 'yellow', fill: false }] },
-      options: { animation: false, responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { beginAtZero: true } } }
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Profit/Loss',
+          data: [],
+          borderColor: function(context) {
+            const value = context.dataset.data[context.dataIndex];
+            return value >= 0 ? 'limegreen' : 'red';
+          },
+          pointRadius: 0,
+          borderWidth: 2,
+          fill: false
+        }]
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `P/L: $${context.raw.toFixed(2)}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { display: false },
+          y: { beginAtZero: true }
+        }
+      }
     });
     botCharts.push(bot.chart);
   });
@@ -104,16 +133,16 @@ function startBot(index) {
   bot.status = "Running";
   renderBots();
 
-  // Simulate profit/loss
   bot.interval = setInterval(() => {
     if (bot.profitData.length >= bot.duration) stopBot(index);
     const last = bot.profitData.length > 0 ? bot.profitData[bot.profitData.length - 1] : 0;
     const change = (Math.random() - 0.5) * bot.volatility;
     const newProfit = last + change;
     bot.profitData.push(newProfit);
-    botCharts[index].data.labels.push(bot.profitData.length);
-    botCharts[index].data.datasets[0].data.push(newProfit);
-    botCharts[index].update();
+
+    bot.chart.data.labels.push(bot.profitData.length);
+    bot.chart.data.datasets[0].data.push(newProfit);
+    bot.chart.update();
   }, 1000);
 }
 
@@ -130,4 +159,4 @@ function deleteBot(index) {
     bots.splice(index, 1);
     renderBots();
   }
-                                        }
+}
