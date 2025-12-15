@@ -6,103 +6,53 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#8B4513; color:white; font-size:1.1em; }
+    body { margin:0; font-family:Arial,sans-serif; background:#8B4513; color:white; }
     a { text-decoration:none; color:inherit; }
 
     /* ===== TOP BARS ===== */
     .top-bar1, .top-bar2 {
       display:flex;
       align-items:center;
-      padding:15px 25px;
+      padding:12px 20px;
       background:#8B4513;
       color:white;
       font-weight:bold;
-      font-size:1.1em;
     }
-
-    .top-bar1{
-      overflow-x:auto;
-      white-space:nowrap;
-      scrollbar-width:none;
-    }
+    .top-bar1{ overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
     .top-bar1::-webkit-scrollbar{ display:none; }
-    .top-bar1 .menu-toggle{
-      margin-right:20px;
-      flex:0 0 auto;
-      font-size:1.5em;
-      cursor:pointer;
-      color:#D2B48C;
-    }
-    .top-bar1 .brand{
-      font-size:1.4em;
-      margin-right:25px;
-      flex:0 0 auto;
-    }
-    .top-bar1 button{
-      margin-right:12px;
-      padding:8px 18px;
-      background:#A0522D;
-      color:white;
-      border:none;
-      border-radius:6px;
-      cursor:pointer;
-      flex:0 0 auto;
-      transition:0.2s;
-      font-size:1em;
-    }
+    .top-bar1 .menu-toggle{ margin-right:15px; font-size:1.2em; cursor:pointer; color:#D2B48C; }
+    .top-bar1 .brand{ font-size:1.2em; margin-right:20px; }
+    .top-bar1 button{ margin-right:10px; padding:6px 14px; background:#A0522D; color:white; border:none; border-radius:4px; cursor:pointer; transition:0.2s; }
     .top-bar1 button:hover{ background:#CD853F; }
 
-    .top-bar2 a{
-      margin-right:12px;
-      padding:10px 20px;
-      background:#A0522D;
-      color:white;
-      border-radius:6px;
-      text-decoration:none;
-      flex:0 0 auto;
-      font-size:1em;
-      transition:0.2s;
-    }
+    .top-bar2{ display:flex; align-items:center; padding:12px 20px; background:#8B4513; overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
+    .top-bar2::-webkit-scrollbar{ display:none; }
+    .top-bar2 a{ margin-right:10px; padding:8px 16px; background:#A0522D; color:white; border-radius:4px; flex:0 0 auto; transition:0.2s; cursor:pointer; }
     .top-bar2 a:hover{ background:#CD853F; }
 
     /* ===== SIDE MENU ===== */
-    .side-menu{
-      position:fixed; top:0; left:-280px; width:280px; height:100%; background:#A0522D; 
-      color:white; overflow-y:auto; transition:0.3s; padding-top:70px; z-index:1000;
-      font-size:1.1em;
-    }
+    .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#A0522D; color:white; overflow-y:auto; transition:0.3s; padding-top:60px; z-index:1000;}
     .side-menu.active{left:0;}
-    .side-menu h3{margin:25px; font-size:1.3em;}
-    .side-menu a{display:flex; align-items:center; padding:14px 25px; color:white; border-bottom:1px solid #8B4513;}
+    .side-menu h3{margin:20px; font-size:1.2em;}
+    .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #8B4513;}
     .side-menu a:hover{background:#8B4513;}
-    .side-menu a i{margin-right:12px; font-size:1.2em;}
+    .side-menu a i{margin-right:10px;}
 
     /* ===== MAIN CONTENT ===== */
-    .content{padding:30px; margin-top:0; font-size:1.2em;}
-    .footer-line{height:3px; background:#A0522D; margin:25px 0;}
-    .clock{ text-align:center; font-size:1.1em; padding:10px; background:#D2691E; color:white; border-radius:6px; }
+    .content{padding:20px; margin-top:0; min-height:calc(100vh - 100px);}
+    .footer-line{height:2px; background:#A0522D; margin:20px 0;}
+    .clock{text-align:center; font-size:1em; padding:5px; background:#D2691E; color:white;}
 
-    /* ===== LIVE TRADES TABLE ===== */
-    #tradesTable{width:100%; border-collapse:collapse; margin-top:20px; background:#D2691E; font-size:1.1em;}
-    #tradesTable th, #tradesTable td{border:1px solid #8B4513; padding:12px 10px; text-align:center;}
-    #tradesTable th{background:#A0522D; color:white; font-size:1.1em;}
-    #tradesTable tbody tr{cursor:pointer; transition:0.2s; font-size:1.05em;}
-    #tradesTable tbody tr:hover{background:#CD853F;}
-    .trade-win{background:#d4f8d4; color:#111;}
-    .trade-loss{background:#f8d4d4; color:#111;}
-    .trade-call i{color:green; margin-right:6px;}
-    .trade-put i{color:red; margin-right:6px;}
-
-    /* ===== TICK CHART ===== */
-    #tickChart{width:100%; height:400px; margin-top:25px; background:#D2691E; border:2px solid #8B4513; border-radius:6px;}
+    /* ===== DYNAMIC SECTIONS ===== */
+    #dynamicContent{ width:100%; }
 
     /* ===== MODAL ===== */
-    #tradeModalContent{padding:25px; border-radius:10px; width:500px; max-width:90%; color:white;}
-    #tradeModalContent span.closeModal{top:12px; right:18px; font-size:1.3em;}
+    #tradeModal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;}
+    #tradeModalContent{background:#A0522D; padding:20px; border-radius:8px; width:400px; max-width:90%; position:relative; color:white;}
+    #tradeModalContent span.closeModal{position:absolute; top:10px; right:15px; cursor:pointer; color:white;}
 
     /* ===== DARK MODE ===== */
     .dark-mode{background:#111; color:white;}
-    .dark-mode #tickChart{background:#222; border-color:#555;}
   </style>
 </head>
 <body>
@@ -117,14 +67,14 @@
 
   <!-- Top Bar 2 -->
   <div class="top-bar2">
-    <a href="#">Dashboard</a>
-    <a href="/pages/bot-builder.html">Bot Builder</a>
-    <a href="/pages/dtrader.html">DTrader</a>
-    <a href="/pages/analysis.html">Analysis Tool</a>
-    <a href="/pages/dp-tool.html">DP Tool</a>
-    <a href="/pages/free-bots.html">Free Bots</a>
-    <a href="/pages/copy-trading.html">Copy Trading</a>
-    <a href="/pages/risk-manager.html">Risk Manager</a>
+    <a onclick="loadSection('dashboard.html')">Dashboard</a>
+    <a onclick="loadSection('bot-builder.html')">Bot Builder</a>
+    <a onclick="loadSection('dtrader.html')">DTrader</a>
+    <a onclick="loadSection('analysis.html')">Analysis Tool</a>
+    <a onclick="loadSection('dp-tool.html')">DP Tool</a>
+    <a onclick="loadSection('free-bots.html')">Free Bots</a>
+    <a onclick="loadSection('copy-trading.html')">Copy Trading</a>
+    <a onclick="loadSection('risk-manager.html')">Risk Manager</a>
   </div>
 
   <!-- Side Menu -->
@@ -144,52 +94,53 @@
 
   <!-- Main Content -->
   <div class="content">
-    <h1>Welcome to KIMHUBFX Dashboard</h1>
-    <p>Use the side menu to navigate.</p>
+    <div id="dynamicContent">
+      <h1>Welcome to KIMHUBFX Dashboard</h1>
+      <p>Use the top menu or side menu to navigate between sections.</p>
+    </div>
+  </div>
 
-    <div class="footer-line"></div>
-    <div class="clock" id="clock">Loading time...</div>
-
-    <!-- Live Trades Table -->
-    <h3>Live Trades</h3>
-    <table id="tradesTable">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Symbol</th>
-          <th>Result</th>
-          <th>Profit</th>
-          <th>Time</th>
-        </tr>
-      </thead>
-      <tbody id="tradesBody">
-        <tr><td colspan="5">Loading trades...</td></tr>
-      </tbody>
-    </table>
-
-    <!-- Tick Chart -->
-    <h3>Live Ticks</h3>
-    <canvas id="tickChart"></canvas>
+  <!-- Trade Modal -->
+  <div id="tradeModal">
+    <div id="tradeModalContent">
+      <span class="closeModal" onclick="closeModal()">×</span>
+      <h3>Trade Details</h3>
+      <div id="modalContent">Loading...</div>
+    </div>
   </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // ===== TOGGLE SIDE MENU =====
-    function toggleSideMenu(){
-      const sideMenu = document.getElementById('sideMenu');
-      sideMenu.classList.toggle('active');
-    }
+    // Toggle side menu
+    function toggleSideMenu(){ document.getElementById('sideMenu').classList.toggle('active'); }
 
-    // ===== DARK MODE =====
+    // Toggle dark mode
     function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
 
-    // ===== CLOCK =====
-    function updateClock(){ 
-      const now=new Date(); 
-      document.getElementById('clock').innerText = `${now.toLocaleDateString()} | ${now.toLocaleTimeString()}`; 
+    // Dynamic content loader
+    async function loadSection(page){
+      const container = document.getElementById('dynamicContent');
+      container.innerHTML = '<p>Loading...</p>';
+      try{
+        const res = await fetch(`pages/${page}`);
+        if(!res.ok) throw new Error('Failed to load section');
+        const html = await res.text();
+        container.innerHTML = html;
+
+        // Load JS if exists
+        const script = document.createElement('script');
+        script.src = `pages/${page.replace('.html','.js')}`;
+        script.type = 'module';
+        document.body.appendChild(script);
+      }catch(e){
+        container.innerHTML = `<p style="color:red;">Failed to load section: ${e.message}</p>`;
+      }
     }
-    setInterval(updateClock,1000); updateClock();
+
+    // Trade Modal
+    function closeModal(){ document.getElementById('tradeModal').style.display='none'; }
+    window.onclick=function(e){ if(e.target===document.getElementById('tradeModal')) closeModal(); }
   </script>
 </body>
 </html>
