@@ -1,1 +1,32 @@
-h
+<h2>Bot Builder</h2>
+<p>Manage your trading bots below. Click on a bot to view or control it.</p>
+
+<table id="botsTable">
+  <thead>
+    <tr>
+      <th>Bot Name</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Bot Alpha</td>
+      <td class="status">Stopped</td>
+      <td>
+        <button onclick="startBot(this)">Start</button>
+        <button onclick="stopBot(this)">Stop</button>
+        <button onclick="deleteBot(this)">Delete</button>
+      </td>
+    </tr>
+    <tr>
+      <td>Bot Beta</td>
+      <td class="status">Running</td>
+      <td>
+        <button onclick="startBot(this)" disabled>Start</button>
+        <button onclick="stopBot(this)">Stop</button>
+        <button onclick="deleteBot(this)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
