@@ -1,240 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Bot Builder - KIMHUBFX</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div id="botBuilder" class="dashboard-page">
+  <h2>Bot Builder</h2>
+  <div class="bot-builder-panel">
+
+    <div class="bot-settings">
+      <label for="volatility">Volatility Contract:</label>
+      <select id="volatility">
+        <option value="CALL">CALL</option>
+        <option value="PUT">PUT</option>
+        <option value="HIGHER">Higher</option>
+        <option value="LOWER">Lower</option>
+        <option value="RISE">Rise</option>
+        <option value="FALL">Fall</option>
+        <option value="RISE_FALL">Rise/Fall</option>
+        <option value="TOUCH">Touch</option>
+        <option value="NO_TOUCH">No Touch</option>
+        <option value="IN">Ends In</option>
+        <option value="OUT">Ends Out</option>
+      </select>
+
+      <label for="stake">Stake Amount:</label>
+      <input type="number" id="stake" value="1" min="1">
+
+      <label for="duration">Duration (seconds):</label>
+      <input type="number" id="duration" value="60" min="1">
+
+      <label for="stopLoss">Stop Loss:</label>
+      <input type="number" id="stopLoss" value="0" min="0">
+
+      <label for="takeProfit">Take Profit:</label>
+      <input type="number" id="takeProfit" value="0" min="0">
+
+      <label for="symbol">Market / Symbol:</label>
+      <select id="symbol">
+        <option value="R_100">R_100</option>
+        <option value="R_50">R_50</option>
+        <option value="R_25">R_25</option>
+        <option value="R_10">R_10</option>
+      </select>
+
+      <div class="bot-actions">
+        <button id="startBot">Start Bot</button>
+        <button id="stopBot">Stop Bot</button>
+      </div>
+    </div>
+
+    <div class="bot-status">
+      <h3>Bot Status</h3>
+      <div id="botLog" class="bot-log">
+        <p>No bot running.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <style>
-  body { margin:0; font-family:Arial,sans-serif; background:#121212; color:white; }
-
-  /* Top Bars */
-  .top-bar1, .top-bar2 { display:flex; align-items:center; padding:12px 20px; background:#121212; color:white; font-weight:bold; }
-  .top-bar1 .menu-toggle{ margin-right:15px; font-size:1.2em; cursor:pointer; color:#00bfa5; }
-  .top-bar1 .brand{ font-size:1.2em; margin-right:20px; }
-  .top-bar1 button{ margin-right:10px; padding:6px 14px; background:#00bfa5; border:none; border-radius:4px; color:#fff; cursor:pointer; }
-  .top-bar1 button:hover{ background:#00a18c; }
-  .top-bar2 a{ margin-right:10px; padding:8px 16px; background:#00bfa5; border-radius:4px; color:white; text-decoration:none; }
-  .top-bar2 a:hover{ background:#00a18c; }
-
-  /* Side Menu */
-  .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#00bfa5; color:white; overflow-y:auto; transition:0.3s; padding-top:60px;}
-  .side-menu.active{left:0;}
-  .side-menu h3{margin:20px; font-size:1.2em;}
-  .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #008f80;}
-  .side-menu a:hover{background:#008f80;}
-  .side-menu a i{margin-right:10px;}
-
-  /* Main Content */
-  .content{padding:20px; margin-top:0;}
-
-  /* Bot Builder */
-  .bot-container { display:flex; flex-wrap:wrap; gap:20px; margin-top:20px; }
-  .bot-card {
-    background:#00bfa5; color:#fff; padding:20px; border-radius:8px; width:250px;
-    box-shadow:0 4px 6px rgba(0,0,0,0.3); transition:transform 0.2s, box-shadow 0.2s;
-  }
-  .bot-card:hover { transform:translateY(-5px); box-shadow:0 8px 12px rgba(0,0,0,0.5); }
-  .bot-card h3{margin-top:0; margin-bottom:10px; font-size:1.2em;}
-  .bot-actions{display:flex; justify-content:space-between; flex-wrap:wrap; gap:5px; margin-top:10px;}
-  .bot-actions button{flex:1 1 45%; padding:6px; border:none; border-radius:4px; cursor:pointer; background:#00796b; color:white;}
-  .bot-actions button:hover{background:#004d40;}
-  .bot-chart { width:100%; height:100px; margin-top:10px; background:#004d40; border-radius:4px; }
-
-  /* Modal */
-  .modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;}
-  .modal-content{background:#00bfa5; padding:20px; border-radius:8px; width:400px; max-width:90%; color:white;}
-  .modal-content label{display:block; margin-top:10px;}
-  .modal-content input{width:100%; padding:6px; margin-top:4px; border-radius:4px; border:none;}
-  .modal-actions{display:flex; justify-content:space-between; margin-top:15px;}
-  .modal-actions button{padding:6px 12px; border:none; border-radius:4px; background:#00796b; color:white; cursor:pointer;}
-  .modal-actions button:hover{background:#004d40;}
+.bot-builder-panel{
+  display:flex; gap:20px; flex-wrap:wrap;
+}
+.bot-settings{
+  flex:1; min-width:250px; padding:15px; background:#A0522D; border-radius:8px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.bot-settings label{font-weight:bold;}
+.bot-settings input, .bot-settings select{
+  padding:6px; border-radius:4px; border:none;
+}
+.bot-actions{display:flex; gap:10px; margin-top:10px;}
+.bot-actions button{
+  flex:1; padding:8px; border:none; border-radius:5px; background:#D2691E; color:white; cursor:pointer;
+  transition:0.2s;
+}
+.bot-actions button:hover{background:#CD853F;}
+.bot-status{
+  flex:2; min-width:300px; padding:15px; background:#8B4513; border-radius:8px;
+  max-height:400px; overflow-y:auto;
+}
+.bot-log{font-size:0.9em; line-height:1.4; color:#fff;}
 </style>
-</head>
-<body>
-
-<!-- Top Bars -->
-<div class="top-bar1">
-  <div class="menu-toggle" onclick="toggleSideMenu()">☰</div>
-  <div class="brand">KIMHUBFX</div>
-  <button onclick="alert('Login clicked')">LOGIN</button>
-  <button onclick="alert('Signup clicked')">SIGNUP</button>
-</div>
-<div class="top-bar2">
-  <a href="#" onclick="showSection('dashboard')">Dashboard</a>
-  <a href="#" onclick="showSection('botBuilder')">Bot Builder</a>
-</div>
-
-<!-- Side Menu -->
-<div class="side-menu" id="sideMenu">
-  <h3>Menu</h3>
-  <a href="#"><i class="fa fa-user"></i> Account settings</a>
-  <a href="#"><i class="fa fa-wallet"></i> Cashier</a>
-  <a href="#" onclick="toggleDarkMode()"><i class="fa fa-moon"></i> Dark theme</a>
-</div>
-
-<!-- Main Content -->
-<div class="content">
-  <div id="dashboardSection">
-    <h1>Welcome to KIMHUBFX Dashboard</h1>
-    <p>Use the top menu to navigate.</p>
-  </div>
-
-  <div id="botBuilderSection" style="display:none;">
-    <h2>Bot Builder</h2>
-    <p>Create, configure, and manage your bots here.</p>
-    <button onclick="openBotModal()">Add New Bot</button>
-    <div id="botContainer" class="bot-container"></div>
-  </div>
-</div>
-
-<!-- Bot Modal -->
-<div id="botModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeBotModal()">&times;</span>
-    <h3 id="modalBotTitle">Configure Bot</h3>
-    <label>Bot Name:</label>
-    <input type="text" id="botName" placeholder="Bot name">
-    <label>Stake ($):</label>
-    <input type="number" id="botStake" placeholder="Stake amount">
-    <label>Duration (seconds):</label>
-    <input type="number" id="botDuration" placeholder="Duration in seconds">
-    <label>Stop-Loss ($):</label>
-    <input type="number" id="botStopLoss" placeholder="Stop-loss amount">
-    <label>Volatility (%):</label>
-    <input type="number" id="botVolatility" placeholder="Volatility">
-    <div class="modal-actions">
-      <button onclick="saveBot()">Save</button>
-      <button onclick="closeBotModal()">Cancel</button>
-    </div>
-  </div>
-</div>
 
 <script>
-  // Side Menu
-  function toggleSideMenu(){ document.getElementById('sideMenu').classList.toggle('active'); }
+let botRunning = false;
+let botInterval = null;
 
-  // Dark mode
-  function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
+function logBot(message){
+  const log = document.getElementById('botLog');
+  const p = document.createElement('p');
+  p.innerText = message;
+  log.prepend(p);
+}
 
-  // Section display
-  function showSection(section){
-    document.getElementById('dashboardSection').style.display = section==='dashboard' ? 'block':'none';
-    document.getElementById('botBuilderSection').style.display = section==='botBuilder' ? 'block':'none';
+document.getElementById('startBot').addEventListener('click',()=>{
+  if(botRunning){
+    logBot("Bot already running.");
+    return;
   }
+  const volatility = document.getElementById('volatility').value;
+  const stake = parseFloat(document.getElementById('stake').value);
+  const duration = parseInt(document.getElementById('duration').value);
+  const stopLoss = parseFloat(document.getElementById('stopLoss').value);
+  const takeProfit = parseFloat(document.getElementById('takeProfit').value);
+  const symbol = document.getElementById('symbol').value;
 
-  // Bot Builder
-  let bots = [];
-  let editIndex = null;
-  let botCharts = [];
+  botRunning = true;
+  logBot(`Bot started with ${volatility} on ${symbol}, Stake: ${stake}, Duration: ${duration}s`);
 
-  function openBotModal(bot=null,index=null){
-    document.getElementById('botModal').style.display='flex';
-    editIndex = index;
-    if(bot){
-      document.getElementById('modalBotTitle').innerText = "Edit Bot";
-      document.getElementById('botName').value = bot.name;
-      document.getElementById('botStake').value = bot.stake;
-      document.getElementById('botDuration').value = bot.duration;
-      document.getElementById('botStopLoss').value = bot.stopLoss;
-      document.getElementById('botVolatility').value = bot.volatility;
-    } else {
-      document.getElementById('modalBotTitle').innerText = "Create Bot";
-      document.getElementById('botName').value = "";
-      document.getElementById('botStake').value = "";
-      document.getElementById('botDuration').value = "";
-      document.getElementById('botStopLoss').value = "";
-      document.getElementById('botVolatility').value = "";
-    }
-  }
+  // Simulated bot ticks
+  botInterval = setInterval(()=>{
+    const result = Math.random()>0.5 ? "WIN" : "LOSS";
+    const profit = result==="WIN"?stake*0.8:-stake;
+    logBot(`Trade: ${volatility} | ${symbol} | ${result} | Profit: ${profit.toFixed(2)}`);
+  }, duration*1000);
+});
 
-  function closeBotModal(){ document.getElementById('botModal').style.display='none'; }
-
-  function saveBot(){
-    const bot = {
-      name: document.getElementById('botName').value,
-      stake: parseFloat(document.getElementById('botStake').value),
-      duration: parseInt(document.getElementById('botDuration').value),
-      stopLoss: parseFloat(document.getElementById('botStopLoss').value),
-      volatility: parseFloat(document.getElementById('botVolatility').value),
-      status: "Stopped",
-      profitData: [],
-      chart: null
-    };
-    if(editIndex !== null){ bots[editIndex] = bot; } else { bots.push(bot); }
-    renderBots();
-    closeBotModal();
-  }
-
-  function renderBots(){
-    const container = document.getElementById('botContainer');
-    container.innerHTML = '';
-    botCharts = []; // reset charts
-
-    bots.forEach((bot,index)=>{
-      const card = document.createElement('div');
-      card.className='bot-card';
-      card.innerHTML=`
-        <h3>${bot.name}</h3>
-        <p><strong>Stake:</strong> $${bot.stake}</p>
-        <p><strong>Duration:</strong> ${bot.duration}s</p>
-        <p><strong>Stop-Loss:</strong> $${bot.stopLoss}</p>
-        <p><strong>Volatility:</strong> ${bot.volatility}%</p>
-        <p><strong>Status:</strong> <span class="status">${bot.status}</span></p>
-        <canvas id="botChart${index}" class="bot-chart"></canvas>
-        <div class="bot-actions">
-          <button onclick="startBot(${index})">Start</button>
-          <button onclick="stopBot(${index})">Stop</button>
-          <button onclick="openBotModal(bots[${index}],${index})">Edit</button>
-          <button onclick="deleteBot(${index})">Delete</button>
-        </div>`;
-      container.appendChild(card);
-
-      // Initialize chart
-      const ctx = document.getElementById(`botChart${index}`).getContext('2d');
-      bot.chart = new Chart(ctx, {
-        type:'line',
-        data:{ labels:[], datasets:[{label:'Profit/Loss', data:[], borderColor:'yellow', fill:false}]},
-        options:{animation:false,responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{beginAtZero:true}}}
-      });
-      botCharts.push(bot.chart);
-    });
-  }
-
-  function startBot(index){
-    const bot = bots[index];
-    if(bot.status==='Running') return;
-    bot.status="Running";
-    renderBots();
-
-    // Simulate profit/loss
-    bot.interval = setInterval(()=>{
-      if(bot.profitData.length>=bot.duration) stopBot(index);
-      const last = bot.profitData.length>0 ? bot.profitData[bot.profitData.length-1] : 0;
-      const change = (Math.random()-0.5)*bot.volatility;
-      const newProfit = last + change;
-      bot.profitData.push(newProfit);
-      botCharts[index].data.labels.push(bot.profitData.length);
-      botCharts[index].data.datasets[0].data.push(newProfit);
-      botCharts[index].update();
-    },1000);
-  }
-
-  function stopBot(index){
-    const bot = bots[index];
-    bot.status="Stopped";
-    renderBots();
-    if(bot.interval) clearInterval(bot.interval);
-  }
-
-  function deleteBot(index){
-    if(confirm('Delete this bot?')){
-      stopBot(index);
-      bots.splice(index,1);
-      renderBots();
-    }
-  }
+document.getElementById('stopBot').addEventListener('click',()=>{
+  if(botInterval) clearInterval(botInterval);
+  botRunning=false;
+  logBot("Bot stopped.");
+});
 </script>
-</body>
-</html>
