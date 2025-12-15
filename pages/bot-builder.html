@@ -1,8 +1,10 @@
 <div id="botBuilder" class="bot-builder-panel">
   <h2>Bot Builder</h2>
 
-  <!-- Symbol & Trade Type -->
-  <div class="bot-row">
+  <!-- Bot Settings Panel -->
+  <div class="bot-settings">
+
+    <!-- Symbol -->
     <div class="bot-card">
       <label>Symbol</label>
       <select id="symbol">
@@ -12,6 +14,7 @@
       </select>
     </div>
 
+    <!-- Trade Type -->
     <div class="bot-card">
       <label>Trade Type</label>
       <select id="tradeType">
@@ -22,6 +25,7 @@
       </select>
     </div>
 
+    <!-- Contract Type -->
     <div class="bot-card">
       <label>Contract Type</label>
       <select id="volatility">
@@ -33,10 +37,12 @@
         <option value="inshott">Inshott</option>
       </select>
     </div>
+
   </div>
 
-  <!-- Trade Parameters -->
-  <div class="bot-row">
+  <!-- Trade Parameters Panel -->
+  <div class="bot-parameters">
+
     <div class="bot-card small">
       <label>Duration (s)</label>
       <input type="number" id="duration" value="10" min="1">
@@ -56,17 +62,20 @@
       <label>Take Profit</label>
       <input type="number" id="takeProfit" value="0" min="0">
     </div>
+
   </div>
 
   <!-- Buttons -->
   <div class="bot-buttons">
-    <button id="startBot">Start Bot</button>
-    <button id="stopBot">Stop Bot</button>
+    <button class="start" id="startBot">Start Bot</button>
+    <button class="stop" id="stopBot">Stop Bot</button>
   </div>
 
   <!-- Bot Log -->
   <div id="botLog" class="bot-log"></div>
 
   <!-- Bot Chart -->
-  <canvas id="botChart"></canvas>
+  <div class="bot-chart-card">
+    <canvas id="botChart"></canvas>
+  </div>
 </div>
