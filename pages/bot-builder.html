@@ -1,121 +1,59 @@
-<div id="botBuilder" class="dashboard-page">
+<div id="botBuilder" class="bot-builder-panel">
   <h2>Bot Builder</h2>
-  <div class="bot-builder-panel">
-
-    <div class="bot-settings">
-      <label for="volatility">Volatility Contract:</label>
-      <select id="volatility">
-        <option value="CALL">CALL</option>
-        <option value="PUT">PUT</option>
-        <option value="HIGHER">Higher</option>
-        <option value="LOWER">Lower</option>
-        <option value="RISE">Rise</option>
-        <option value="FALL">Fall</option>
-        <option value="RISE_FALL">Rise/Fall</option>
-        <option value="TOUCH">Touch</option>
-        <option value="NO_TOUCH">No Touch</option>
-        <option value="IN">Ends In</option>
-        <option value="OUT">Ends Out</option>
-      </select>
-
-      <label for="stake">Stake Amount:</label>
-      <input type="number" id="stake" value="1" min="1">
-
-      <label for="duration">Duration (seconds):</label>
-      <input type="number" id="duration" value="60" min="1">
-
-      <label for="stopLoss">Stop Loss:</label>
-      <input type="number" id="stopLoss" value="0" min="0">
-
-      <label for="takeProfit">Take Profit:</label>
-      <input type="number" id="takeProfit" value="0" min="0">
-
-      <label for="symbol">Market / Symbol:</label>
-      <select id="symbol">
-        <option value="R_100">R_100</option>
-        <option value="R_50">R_50</option>
-        <option value="R_25">R_25</option>
-        <option value="R_10">R_10</option>
-      </select>
-
-      <div class="bot-actions">
-        <button id="startBot">Start Bot</button>
-        <button id="stopBot">Stop Bot</button>
-      </div>
-    </div>
-
-    <div class="bot-status">
-      <h3>Bot Status</h3>
-      <div id="botLog" class="bot-log">
-        <p>No bot running.</p>
-      </div>
-    </div>
-
+  
+  <div class="bot-field">
+    <label>Symbol:</label>
+    <input type="text" id="symbol" placeholder="e.g., R_100">
   </div>
+
+  <div class="bot-field">
+    <label>Trade Type:</label>
+    <select id="tradeType">
+      <option value="CALLPUT">Rise/Fall</option>
+      <option value="HIGHERLOWER">Higher/Lower</option>
+      <option value="TOUCH">Touch/No Touch</option>
+      <option value="ENDS">Ends In/Out</option>
+    </select>
+  </div>
+
+  <div class="bot-field">
+    <label>Contract Type:</label>
+    <select id="volatility">
+      <option value="CALLPUT_NORMAL">Normal</option>
+      <option value="1s_CALLPUT">1s</option>
+      <option value="5s_CALLPUT">5s</option>
+      <option value="10s_CALLPUT">10s</option>
+      <option value="1s_HIGHERLOWER">1s</option>
+      <option value="5s_HIGHERLOWER">5s</option>
+      <option value="10s_HIGHERLOWER">10s</option>
+      <!-- Add more short-term volatilities -->
+    </select>
+  </div>
+
+  <div class="bot-field">
+    <label>Duration (s):</label>
+    <input type="number" id="duration" value="10" min="1">
+  </div>
+
+  <div class="bot-field">
+    <label>Stake:</label>
+    <input type="number" id="stake" value="1" min="0.1" step="0.1">
+  </div>
+
+  <div class="bot-field">
+    <label>Stop Loss:</label>
+    <input type="number" id="stopLoss" value="0" min="0">
+  </div>
+
+  <div class="bot-field">
+    <label>Take Profit:</label>
+    <input type="number" id="takeProfit" value="0" min="0">
+  </div>
+
+  <button id="startBot">Start Bot</button>
+  <button id="stopBot">Stop Bot</button>
+
+  <div id="botLog" style="margin-top:20px; max-height:200px; overflow:auto; background:#A0522D; padding:10px; border-radius:6px;"></div>
 </div>
 
-<style>
-.bot-builder-panel{
-  display:flex; gap:20px; flex-wrap:wrap;
-}
-.bot-settings{
-  flex:1; min-width:250px; padding:15px; background:#A0522D; border-radius:8px;
-  display:flex; flex-direction:column; gap:10px;
-}
-.bot-settings label{font-weight:bold;}
-.bot-settings input, .bot-settings select{
-  padding:6px; border-radius:4px; border:none;
-}
-.bot-actions{display:flex; gap:10px; margin-top:10px;}
-.bot-actions button{
-  flex:1; padding:8px; border:none; border-radius:5px; background:#D2691E; color:white; cursor:pointer;
-  transition:0.2s;
-}
-.bot-actions button:hover{background:#CD853F;}
-.bot-status{
-  flex:2; min-width:300px; padding:15px; background:#8B4513; border-radius:8px;
-  max-height:400px; overflow-y:auto;
-}
-.bot-log{font-size:0.9em; line-height:1.4; color:#fff;}
-</style>
-
-<script>
-let botRunning = false;
-let botInterval = null;
-
-function logBot(message){
-  const log = document.getElementById('botLog');
-  const p = document.createElement('p');
-  p.innerText = message;
-  log.prepend(p);
-}
-
-document.getElementById('startBot').addEventListener('click',()=>{
-  if(botRunning){
-    logBot("Bot already running.");
-    return;
-  }
-  const volatility = document.getElementById('volatility').value;
-  const stake = parseFloat(document.getElementById('stake').value);
-  const duration = parseInt(document.getElementById('duration').value);
-  const stopLoss = parseFloat(document.getElementById('stopLoss').value);
-  const takeProfit = parseFloat(document.getElementById('takeProfit').value);
-  const symbol = document.getElementById('symbol').value;
-
-  botRunning = true;
-  logBot(`Bot started with ${volatility} on ${symbol}, Stake: ${stake}, Duration: ${duration}s`);
-
-  // Simulated bot ticks
-  botInterval = setInterval(()=>{
-    const result = Math.random()>0.5 ? "WIN" : "LOSS";
-    const profit = result==="WIN"?stake*0.8:-stake;
-    logBot(`Trade: ${volatility} | ${symbol} | ${result} | Profit: ${profit.toFixed(2)}`);
-  }, duration*1000);
-});
-
-document.getElementById('stopBot').addEventListener('click',()=>{
-  if(botInterval) clearInterval(botInterval);
-  botRunning=false;
-  logBot("Bot stopped.");
-});
-</script>
+<canvas id="botChart" style="height:200px; width:100%; margin-top:20px;"></canvas>
