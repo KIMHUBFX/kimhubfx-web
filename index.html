@@ -5,13 +5,111 @@
   <title>KIMHUBFX Dashboard</title>
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#8B4513; color:white; font-size:1.1em; }
+    a { text-decoration:none; color:inherit; }
+
+    /* ===== TOP BARS ===== */
+    .top-bar1, .top-bar2 {
+      display:flex;
+      align-items:center;
+      padding:15px 25px;
+      background:#8B4513;
+      color:white;
+      font-weight:bold;
+      font-size:1.1em;
+    }
+
+    .top-bar1{
+      overflow-x:auto;
+      white-space:nowrap;
+      scrollbar-width:none;
+    }
+    .top-bar1::-webkit-scrollbar{ display:none; }
+    .top-bar1 .menu-toggle{
+      margin-right:20px;
+      flex:0 0 auto;
+      font-size:1.5em;
+      cursor:pointer;
+      color:#D2B48C;
+    }
+    .top-bar1 .brand{
+      font-size:1.4em;
+      margin-right:25px;
+      flex:0 0 auto;
+    }
+    .top-bar1 button{
+      margin-right:12px;
+      padding:8px 18px;
+      background:#A0522D;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      flex:0 0 auto;
+      transition:0.2s;
+      font-size:1em;
+    }
+    .top-bar1 button:hover{ background:#CD853F; }
+
+    .top-bar2 a{
+      margin-right:12px;
+      padding:10px 20px;
+      background:#A0522D;
+      color:white;
+      border-radius:6px;
+      text-decoration:none;
+      flex:0 0 auto;
+      font-size:1em;
+      transition:0.2s;
+    }
+    .top-bar2 a:hover{ background:#CD853F; }
+
+    /* ===== SIDE MENU ===== */
+    .side-menu{
+      position:fixed; top:0; left:-280px; width:280px; height:100%; background:#A0522D; 
+      color:white; overflow-y:auto; transition:0.3s; padding-top:70px; z-index:1000;
+      font-size:1.1em;
+    }
+    .side-menu.active{left:0;}
+    .side-menu h3{margin:25px; font-size:1.3em;}
+    .side-menu a{display:flex; align-items:center; padding:14px 25px; color:white; border-bottom:1px solid #8B4513;}
+    .side-menu a:hover{background:#8B4513;}
+    .side-menu a i{margin-right:12px; font-size:1.2em;}
+
+    /* ===== MAIN CONTENT ===== */
+    .content{padding:30px; margin-top:0; font-size:1.2em;}
+    .footer-line{height:3px; background:#A0522D; margin:25px 0;}
+    .clock{ text-align:center; font-size:1.1em; padding:10px; background:#D2691E; color:white; border-radius:6px; }
+
+    /* ===== LIVE TRADES TABLE ===== */
+    #tradesTable{width:100%; border-collapse:collapse; margin-top:20px; background:#D2691E; font-size:1.1em;}
+    #tradesTable th, #tradesTable td{border:1px solid #8B4513; padding:12px 10px; text-align:center;}
+    #tradesTable th{background:#A0522D; color:white; font-size:1.1em;}
+    #tradesTable tbody tr{cursor:pointer; transition:0.2s; font-size:1.05em;}
+    #tradesTable tbody tr:hover{background:#CD853F;}
+    .trade-win{background:#d4f8d4; color:#111;}
+    .trade-loss{background:#f8d4d4; color:#111;}
+    .trade-call i{color:green; margin-right:6px;}
+    .trade-put i{color:red; margin-right:6px;}
+
+    /* ===== TICK CHART ===== */
+    #tickChart{width:100%; height:400px; margin-top:25px; background:#D2691E; border:2px solid #8B4513; border-radius:6px;}
+
+    /* ===== MODAL ===== */
+    #tradeModalContent{padding:25px; border-radius:10px; width:500px; max-width:90%; color:white;}
+    #tradeModalContent span.closeModal{top:12px; right:18px; font-size:1.3em;}
+
+    /* ===== DARK MODE ===== */
+    .dark-mode{background:#111; color:white;}
+    .dark-mode #tickChart{background:#222; border-color:#555;}
+  </style>
 </head>
 <body>
 
   <!-- Top Bar 1 -->
   <div class="top-bar1">
-    <div class="menu-toggle" onclick="toggleSideMenu()">☰ Menu</div>
+    <div class="menu-toggle" onclick="toggleSideMenu()">☰</div>
     <div class="brand">KIMHUBFX</div>
     <button onclick="location.href='login.html'">LOGIN</button>
     <button onclick="location.href='signup.html'">SIGNUP</button>
@@ -42,7 +140,6 @@
     <a href="https://whatsapp.com/channel/0029Vb77BD8B4hdNphlldH3g" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
     <a href="#"><i class="fa fa-shield-alt"></i> Responsible trading</a>
     <a href="#"><i class="fa fa-comment-dots"></i> WhatsApp DM</a>
-    <div class="clock" id="clock">Loading time...</div>
   </div>
 
   <!-- Main Content -->
@@ -75,116 +172,24 @@
     <canvas id="tickChart"></canvas>
   </div>
 
-  <!-- Trade Modal -->
-  <div id="tradeModal">
-    <div id="tradeModalContent">
-      <span class="closeModal" onclick="closeModal()">×</span>
-      <h3>Trade Details</h3>
-      <div id="modalContent">Loading...</div>
-    </div>
-  </div>
-
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // Toggle Side Menu
+    // ===== TOGGLE SIDE MENU =====
     function toggleSideMenu(){
-      document.getElementById('sideMenu').classList.toggle('active');
+      const sideMenu = document.getElementById('sideMenu');
+      sideMenu.classList.toggle('active');
     }
 
-    // Toggle Dark Mode
-    function toggleDarkMode(){
-      document.body.classList.toggle('dark-mode');
-    }
+    // ===== DARK MODE =====
+    function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
 
-    // Clock
-    function updateClock(){
-      const now = new Date();
-      document.getElementById('clock').innerText = now.toLocaleString();
+    // ===== CLOCK =====
+    function updateClock(){ 
+      const now=new Date(); 
+      document.getElementById('clock').innerText = `${now.toLocaleDateString()} | ${now.toLocaleTimeString()}`; 
     }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Live Trades
-    let tradeWs = null;
-    async function loadTrades(){
-      try{
-        const token = localStorage.getItem('token');
-        const res = await fetch('/api/trades',{ headers:{Authorization:`Bearer ${token}`}});
-        const trades = await res.json();
-        const tbody = document.getElementById('tradesBody');
-        tbody.innerHTML = trades.map(t=>{
-          let typeIcon='', typeClass='';
-          if(t.type==='CALL'){ typeIcon='<i class="fas fa-arrow-up"></i>'; typeClass='trade-call'; }
-          else if(t.type==='PUT'){ typeIcon='<i class="fas fa-arrow-down"></i>'; typeClass='trade-put'; }
-          else{ typeIcon='<i class="fas fa-robot"></i>'; typeClass=''; }
-          const cls = t.result==='WIN'?'trade-win':t.result==='LOSS'?'trade-loss':'';
-          return `<tr class="${cls}" onclick="showTradeDetails('${t._id}')">
-                    <td class="${typeClass}">${typeIcon}${t.type}</td>
-                    <td>${t.symbol}</td>
-                    <td>${t.result}</td>
-                    <td>${t.profit}</td>
-                    <td>${new Date(t.time).toLocaleTimeString()}</td>
-                  </tr>`;
-        }).join('');
-      }catch(e){ console.error(e); }
-    }
-    setInterval(loadTrades,3000); loadTrades();
-
-    // Live Tick Chart
-    const ctx = document.getElementById('tickChart').getContext('2d');
-    const tickData = { labels:[], datasets:[{label:'R_100', data:[], borderColor:'var(--deriv-teal)', fill:false}] };
-    const tickChart = new Chart(ctx,{type:'line', data:tickData, options:{animation:false,responsive:true,scales:{x:{title:{display:true,text:'Time'}},y:{title:{display:true,text:'Price'}}}}});
-    const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
-    ws.onopen=()=>{ ws.send(JSON.stringify({ticks:'R_100',subscribe:1})); };
-    ws.onmessage=e=>{
-      const data=JSON.parse(e.data);
-      if(data.tick){
-        const time=new Date(data.tick.epoch*1000).toLocaleTimeString();
-        const price=data.tick.quote;
-        tickData.labels.push(time); tickData.datasets[0].data.push(price);
-        if(tickData.labels.length>50){ tickData.labels.shift(); tickData.datasets[0].data.shift(); }
-        tickChart.update();
-      }
-    };
-
-    // Trade Modal
-    async function showTradeDetails(tradeId){
-      const modal=document.getElementById('tradeModal');
-      const content=document.getElementById('modalContent');
-      modal.style.display='flex';
-      content.innerHTML='Loading...';
-      if(tradeWs){ tradeWs.close(); tradeWs=null; }
-      try{
-        const token=localStorage.getItem('token');
-        const res=await fetch(`/api/trades/${tradeId}`,{ headers:{Authorization:`Bearer ${token}`}});
-        const t=await res.json();
-        content.innerHTML=`<p><strong>Trade ID:</strong>${t._id}</p>
-                           <p><strong>Bot:</strong>${t.botName||'Manual'}</p>
-                           <p><strong>Type:</strong>${t.type}</p>
-                           <p><strong>Symbol:</strong>${t.symbol}</p>
-                           <p><strong>Stake:</strong>${t.stake}</p>
-                           <p><strong>Duration:</strong>${t.duration} sec</p>
-                           <p><strong>Result:</strong> <span id="tradeResult">${t.result}</span></p>
-                           <p><strong>Profit:</strong> <span id="tradeProfit">${t.profit}</span></p>
-                           <canvas id="tradeChart" style="height:150px;"></canvas>`;
-        const ctx=document.getElementById('tradeChart').getContext('2d');
-        const tickDataModal={labels:t.tickTimes?.map(ts=>new Date(ts*1000).toLocaleTimeString())||[], datasets:[{label:'Price', data:t.tickQuotes||[], borderColor:'var(--deriv-teal)', fill:false}]};
-        const tradeChart=new Chart(ctx,{type:'line', data:tickDataModal, options:{responsive:true, animation:false, plugins:{legend:{display:false}}}});
-        tradeWs=new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
-        tradeWs.onopen=()=>{ tradeWs.send(JSON.stringify({ticks:t.symbol,subscribe:1})); };
-        tradeWs.onmessage=e=>{
-          const data=JSON.parse(e.data);
-          if(data.tick){
-            const time=new Date(data.tick.epoch*1000).toLocaleTimeString();
-            const price=data.tick.quote;
-            tickDataModal.labels.push(time); tickDataModal.datasets[0].data.push(price);
-            if(tickDataModal.labels.length>50){ tickDataModal.labels.shift(); tickDataModal.datasets[0].data.shift(); }
-            tradeChart.update();
-          }
-        };
-      }catch(e){ content.innerHTML='Failed to load trade details.'; console.error(e); }
-    }
-    function closeModal(){ document.getElementById('tradeModal').style.display='none'; if(tradeWs){ tradeWs.close(); tradeWs=null; } }
-    window.onclick=function(e){ const modal=document.getElementById('tradeModal'); if(e.target===modal) closeModal(); }
+    setInterval(updateClock,1000); updateClock();
   </script>
 </body>
-                                         </html>
+</html>
