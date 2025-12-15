@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bot Builder - KIMHUBFX</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#8B4513; color:white; }
+    a { text-decoration:none; color:inherit; }
+
+    /* ===== TOP BARS ===== */
+    .top-bar1, .top-bar2 {
+      display:flex;
+      align-items:center;
+      padding:12px 20px;
+      background:#8B4513;
+      color:white;
+      font-weight:bold;
+    }
+    .top-bar1 .menu-toggle{ margin-right:15px; font-size:1.2em; cursor:pointer; color:#D2B48C; }
+    .top-bar1 .brand{ font-size:1.2em; margin-right:20px; }
+    .top-bar1 button{ margin-right:10px; padding:6px 14px; background:#A0522D; border:none; border-radius:4px; cursor:pointer; }
+    .top-bar1 button:hover{ background:#CD853F; }
+    .top-bar2{ overflow-x:auto; white-space:nowrap; scrollbar-width:none; }
+    .top-bar2 a{ margin-right:10px; padding:8px 16px; background:#A0522D; color:white; border-radius:4px; text-decoration:none; flex:0 0 auto; transition:0.2s; }
+    .top-bar2 a:hover{ background:#CD853F; }
+
+    /* ===== SIDE MENU ===== */
+    .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#A0522D; color:white; overflow-y:auto; transition:0.3s; padding-top:60px; z-index:1000;}
+    .side-menu.active{left:0;}
+    .side-menu h3{margin:20px; font-size:1.2em;}
+    .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #8B4513;}
+    .side-menu a:hover{background:#8B4513;}
+    .side-menu a i{margin-right:10px;}
+
+    /* ===== MAIN CONTENT ===== */
+    .content{padding:20px; margin-top:0;}
+    .bot-form{max-width:700px; margin:auto; background:#D2691E; padding:20px; border-radius:8px;}
+    .bot-form h2{text-align:center;}
+    .bot-form label{display:block; margin-top:10px;}
+    .bot-form input, .bot-form select{width:100%; padding:8px; margin-top:5px; border-radius:4px; border:none;}
+    .bot-form button{margin-top:15px; padding:10px; width:32%; background:#A0522D; color:white; border:none; border-radius:4px; cursor:pointer; transition:0.2s; margin-right:1%;}
+    .bot-form button:last-child{margin-right:0;}
+    .bot-form button:hover{ background:#CD853F; }
+    #botTickChart{width:100%; height:250px; margin-top:20px; background:#D2691E; border:1px solid #8B4513; border-radius:8px;}
+    .login-buttons button{width:48%; margin-right:2%;} 
+    .login-buttons button:last-child{margin-right:0;}
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar 1 -->
+  <div class="top-bar1">
+    <div class="menu-toggle" onclick="toggleSideMenu()">☰</div>
+    <div class="brand">KIMHUBFX</div>
+    <button onclick="location.href='../login.html'">LOGIN</button>
+    <button onclick="location.href='../signup.html'">SIGNUP</button>
+  </div>
+
+  <!-- Top Bar 2 -->
+  <div class="top-bar2">
+    <a href="../dashboard.html">Dashboard</a>
+    <a href="#">Bot Builder</a>
+    <a href="../dtrader.html">DTrader</a>
+    <a href="../analysis.html">Analysis Tool</a>
+    <a href="../dp-tool.html">DP Tool</a>
+    <a href="../free-bots.html">Free Bots</a>
+    <a href="../copy-trading.html">Copy Trading</a>
+    <a href="../risk-manager.html">Risk Manager</a>
+  </div>
+
+  <!-- Side Menu -->
+  <div class="side-menu" id="sideMenu">
+    <h3>Menu</h3>
+    <a href="#"><i class="fa fa-user"></i> Account settings</a>
+    <a href="#"><i class="fa fa-wallet"></i> Cashier</a>
+    <a href="#" onclick="toggleDarkMode()"><i class="fa fa-moon"></i> Dark theme</a>
+    <a href="https://t.me/kimhubfx" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+    <a href="https://www.youtube.com/@kimhtai" target="_blank"><i class="fab fa-youtube"></i> YouTube</a>
+    <a href="https://www.tiktok.com/@kimh.tai?_r=1&_t=ZM-92Ejr32XfPE" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a>
+    <a href="https://www.instagram.com/kimh.tai?igsh=c3ZucHNnOHdpMXM4" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+    <a href="https://whatsapp.com/channel/0029Vb77BD8B4hdNphlldH3g" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    <a href="#"><i class="fa fa-shield-alt"></i> Responsible trading</a>
+    <a href="#"><i class="fa fa-comment-dots"></i> WhatsApp DM</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="bot-form">
+      <h2>Build Your Trading Bot</h2>
+
+      <!-- Deriv Login Buttons -->
+      <div class="login-buttons" style="display:flex; justify-content:space-between; margin-bottom:15px;">
+        <button onclick="derivLogin('demo')">Login Demo</button>
+        <button onclick="derivLogin('real')">Login Real</button>
+      </div>
+
+      <!-- Account Type Toggle -->
+      <label for="accountType">Account Type:</label>
+      <select id="accountType">
+        <option value="demo">Demo</option>
+        <option value="real">Real</option>
+      </select>
+
+      <!-- Bot Parameters -->
+      <label for="botName">Bot Name:</label>
+      <input type="text" id="botName" placeholder="Enter bot name">
+
+      <label for="symbol">Symbol / Market:</label>
+      <select id="symbol">
+        <option value="R_100">R_100</option>
+        <option value="R_50">R_50</option>
+        <option value="R_25">R_25</option>
+      </select>
+
+      <label for="stake">Stake:</label>
+      <input type="number" id="stake" placeholder="Enter stake amount">
+
+      <label for="volatility">Volatility (%):</label>
+      <input type="number" id="volatility" placeholder="Volatility percentage">
+
+      <label for="stopLoss">Stop Loss:</label>
+      <input type="number" id="stopLoss" placeholder="Amount">
+
+      <label for="takeProfit">Take Profit:</label>
+      <input type="number" id="takeProfit" placeholder="Amount">
+
+      <label for="strategy">Strategy:</label>
+      <select id="strategy">
+        <option value="martingale">Martingale</option>
+        <option value="fixed">Fixed</option>
+      </select>
+
+      <label for="duration">Duration (seconds):</label>
+      <input type="number" id="duration" placeholder="Trade duration">
+
+      <!-- Bot Controls -->
+      <div style="display:flex; justify-content:space-between;">
+        <button onclick="startBot()">Start Bot</button>
+        <button onclick="pauseBot()">Pause Bot</button>
+        <button onclick="stopBot()">Stop Bot</button>
+      </div>
+
+      <!-- Live Tick Chart -->
+      <canvas id="botTickChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // ===== TOGGLE SIDE MENU =====
+    function toggleSideMenu(){ document.getElementById('sideMenu').classList.toggle('active'); }
+
+    // ===== DARK MODE =====
+    function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
+
+    // ===== Deriv OAuth Login =====
+    function derivLogin(accountType){
+      const app_id = '1089';
+      const redirect_uri = window.location.origin + window.location.pathname;
+      const url = `https://oauth.deriv.com/oauth2/authorize?app_id=${app_id}&l=EN&brand=deriv&state=${accountType}&redirect_uri=${encodeURIComponent(redirect_uri)}&response_type=token&scope=trade`;
+      const loginWindow = window.open(url,'_blank','width=500,height=600');
+
+      const pollTimer = setInterval(()=>{
+        try{
+          if(loginWindow.location.href.includes('access_token')){
+            const hash = loginWindow.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const token = params.get('access_token');
+            if(token){
+              localStorage.setItem(accountType+'Token', token);
+              alert(`${accountType.toUpperCase()} login successful!`);
+            }
+            clearInterval(pollTimer);
+            loginWindow.close();
+          }
+        }catch(err){}
+      },1000);
+    }
+
+    // ===== BOT LOGIC =====
+    let botRunning=false, botWs=null, totalProfit=0;
+
+    const ctx = document.getElementById('botTickChart').getContext('2d');
+    const tickData = { labels:[], datasets:[{label:'Price', data:[], borderColor:'rgba(75,192,192,1)', fill:false}] };
+    const tickChart = new Chart(ctx,{type:'line', data:tickData, options:{animation:false,responsive:true,scales:{x:{title:{display:true,text:'Time'}},y:{title:{display:true,text:'Price'}}}}});
+
+    function startBot(){
+      if(botRunning) return alert("Bot is already running");
+      botRunning=true; totalProfit=0;
+
+      const accountType = document.getElementById('accountType').value;
+      if(accountType==='real' && !confirm("You are about to trade with real money! Continue?")) { botRunning=false; return; }
+
+      const config = {
+        botName: document.getElementById('botName').value,
+        symbol: document.getElementById('symbol').value,
+        stake: parseFloat(document.getElementById('stake').value),
+        volatility: parseFloat(document.getElementById('volatility').value),
+        stopLoss: parseFloat(document.getElementById('stopLoss').value),
+        takeProfit: parseFloat(document.getElementById('takeProfit').value),
+        strategy: document.getElementById('strategy').value,
+        duration: parseInt(document.getElementById('duration').value)
+      };
+
+      if(!config.botName || !config.stake || !config.duration){ alert("Please fill required fields."); botRunning=false; return; }
+
+      const token = localStorage.getItem(accountType+'Token');
+      if(!token){ alert(`Please login to your ${accountType} account first!`); botRunning=false; return; }
+
+      alert(`Bot Started!\n${JSON.stringify(config,null,2)}`);
+
+      botWs = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+
+      botWs.onopen = ()=> botWs.send(JSON.stringify({ticks: config.symbol, subscribe:1}));
+
+      botWs.onmessage = e=>{
+        const data = JSON.parse(e.data);
+        if(data.tick){
+          const price = data.tick.quote;
+          const time = new Date(data.tick.epoch*1000).toLocaleTimeString();
+
+          tickData.labels.push(time);
+          tickData.datasets[0].data.push(price);
+          if(tickData.labels.length>50){ tickData.labels.shift(); tickData.datasets[0].data.shift(); }
+          tickChart.update();
+
+          if(botRunning){
+            try{
+              const direction = Math.random()>0.5?'CALL':'PUT';
+              const tradeData = {
+                buy:1,
+                price:config.stake,
+                parameters:{amount:config.stake,basis:"stake",contract_type:direction,currency:"USD",duration:config.duration,duration_unit:"s",symbol:config.symbol},
+                passthrough:{strategy:config.strategy},
+                subscribe:1,
+                trading_platform:"bot"
+              };
+              botWs.send(JSON.stringify({authorize:token}));
+              botWs.send(JSON.stringify(tradeData));
+            }catch(err){ console.error(err); }
+          }
+
+          if(totalProfit>=config.takeProfit){ stopBot(); alert("Take Profit reached"); }
+          if(totalProfit<=-config.stopLoss){ stopBot(); alert("Stop Loss reached"); }
+        }
+        if(data.profit) totalProfit+=data.profit;
+      };
+    }
+
+    function pauseBot(){ if(!botRunning) return; botRunning=false; if(botWs) botWs.close(); alert("Bot Paused"); }
+    function stopBot(){ if(!botRunning) return; botRunning=false; if(botWs) botWs.close(); tickData.labels=[]; tickData.datasets[0].data=[]; tickChart.update(); alert("Bot Stopped"); }
+  </script>
+
+</body>
+</html>
