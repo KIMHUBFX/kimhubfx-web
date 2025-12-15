@@ -1,59 +1,72 @@
 <div id="botBuilder" class="bot-builder-panel">
   <h2>Bot Builder</h2>
-  
-  <div class="bot-field">
-    <label>Symbol:</label>
-    <input type="text" id="symbol" placeholder="e.g., R_100">
+
+  <!-- Symbol & Trade Type -->
+  <div class="bot-row">
+    <div class="bot-card">
+      <label>Symbol</label>
+      <select id="symbol">
+        <option value="R_100">R_100</option>
+        <option value="R_50">R_50</option>
+        <option value="R_25">R_25</option>
+      </select>
+    </div>
+
+    <div class="bot-card">
+      <label>Trade Type</label>
+      <select id="tradeType">
+        <option value="CALLPUT">Rise/Fall</option>
+        <option value="HIGHERLOWER">Higher/Lower</option>
+        <option value="TOUCH">Touch/No Touch</option>
+        <option value="ENDS">Ends In/Out</option>
+      </select>
+    </div>
+
+    <div class="bot-card">
+      <label>Contract Type</label>
+      <select id="volatility">
+        <option value="1s">1s</option>
+        <option value="5s">5s</option>
+        <option value="10s">10s</option>
+        <option value="15s">15s</option>
+        <option value="30s">30s</option>
+        <option value="inshott">Inshott</option>
+      </select>
+    </div>
   </div>
 
-  <div class="bot-field">
-    <label>Trade Type:</label>
-    <select id="tradeType">
-      <option value="CALLPUT">Rise/Fall</option>
-      <option value="HIGHERLOWER">Higher/Lower</option>
-      <option value="TOUCH">Touch/No Touch</option>
-      <option value="ENDS">Ends In/Out</option>
-    </select>
+  <!-- Trade Parameters -->
+  <div class="bot-row">
+    <div class="bot-card small">
+      <label>Duration (s)</label>
+      <input type="number" id="duration" value="10" min="1">
+    </div>
+
+    <div class="bot-card small">
+      <label>Stake</label>
+      <input type="number" id="stake" value="1" min="0.1" step="0.1">
+    </div>
+
+    <div class="bot-card small">
+      <label>Stop Loss</label>
+      <input type="number" id="stopLoss" value="0" min="0">
+    </div>
+
+    <div class="bot-card small">
+      <label>Take Profit</label>
+      <input type="number" id="takeProfit" value="0" min="0">
+    </div>
   </div>
 
-  <div class="bot-field">
-    <label>Contract Type:</label>
-    <select id="volatility">
-      <option value="CALLPUT_NORMAL">Normal</option>
-      <option value="1s_CALLPUT">1s</option>
-      <option value="5s_CALLPUT">5s</option>
-      <option value="10s_CALLPUT">10s</option>
-      <option value="1s_HIGHERLOWER">1s</option>
-      <option value="5s_HIGHERLOWER">5s</option>
-      <option value="10s_HIGHERLOWER">10s</option>
-      <!-- Add more short-term volatilities -->
-    </select>
+  <!-- Buttons -->
+  <div class="bot-buttons">
+    <button id="startBot">Start Bot</button>
+    <button id="stopBot">Stop Bot</button>
   </div>
 
-  <div class="bot-field">
-    <label>Duration (s):</label>
-    <input type="number" id="duration" value="10" min="1">
-  </div>
+  <!-- Bot Log -->
+  <div id="botLog" class="bot-log"></div>
 
-  <div class="bot-field">
-    <label>Stake:</label>
-    <input type="number" id="stake" value="1" min="0.1" step="0.1">
-  </div>
-
-  <div class="bot-field">
-    <label>Stop Loss:</label>
-    <input type="number" id="stopLoss" value="0" min="0">
-  </div>
-
-  <div class="bot-field">
-    <label>Take Profit:</label>
-    <input type="number" id="takeProfit" value="0" min="0">
-  </div>
-
-  <button id="startBot">Start Bot</button>
-  <button id="stopBot">Stop Bot</button>
-
-  <div id="botLog" style="margin-top:20px; max-height:200px; overflow:auto; background:#A0522D; padding:10px; border-radius:6px;"></div>
+  <!-- Bot Chart -->
+  <canvas id="botChart"></canvas>
 </div>
-
-<canvas id="botChart" style="height:200px; width:100%; margin-top:20px;"></canvas>
