@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KIMHUBFX Dashboard</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Bar 1 -->
+  <div class="top-bar1">
+    <div class="menu-toggle" onclick="toggleSideMenu()">☰ Menu</div>
+    <div class="brand">KIMHUBFX</div>
+    <button onclick="location.href='login.html'">Login</button>
+    <button onclick="location.href='signup.html'">Sign Up</button>
+  </div>
+
+  <!-- Top Bar 2 -->
+  <div class="top-bar2">
+    <a href="#">Dashboard</a>
+    <a href="pages/bot-builder.html">Bot Builder</a>
+    <a href="pages/free-bots.html">Free Bots</a>
+    <a href="pages/analysis.html">Analysis Tool</a>
+    <a href="pages/dp-tool.html">DP Tool</a>
+    <a href="pages/dtrader.html">DTrader</a>
+    <a href="pages/terms.html">Terms</a>
+    <a href="pages/privacy.html">Privacy</a>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="container">
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+      <h3>Expanded Menu</h3>
+      <a href="#"><i class="fa fa-user"></i> 1. Account Settings</a>
+      <a href="#"><i class="fa fa-wallet"></i> 2. Cashier</a>
+      <div class="toggle-dark">
+        <span><i class="fa fa-moon"></i> 3. Dark Theme</span>
+        <input type="checkbox" onclick="toggleDarkMode()">
+      </div>
+      <a href="https://t.me/kimhubfx" target="_blank"><i class="fab fa-telegram"></i> 4. Telegram</a>
+      <a href="https://www.youtube.com/@kimhtai" target="_blank"><i class="fab fa-youtube"></i> 5. YouTube</a>
+      <a href="https://www.tiktok.com/@kimh.tai?_r=1&_t=ZM-92Ejr32XfPE" target="_blank"><i class="fab fa-tiktok"></i> 6. TikTok</a>
+      <a href="https://www.instagram.com/kimh.tai?igsh=c3ZucHNnOHdpMXM4" target="_blank"><i class="fab fa-instagram"></i> 7. Instagram</a>
+      <a href="https://whatsapp.com/channel/0029Vb77BD8B4hdNphlldH3g" target="_blank"><i class="fab fa-whatsapp"></i> 8. WhatsApp</a>
+      <a href="#"><i class="fa fa-shield-alt"></i> 9. Responsible Trading</a>
+      <div class="clock" id="clock">Loading time...</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="panels">
+        <!-- Bot Panel -->
+        <div class="panel">
+          <h3>Bot Panel</h3>
+          <p><i class="fa fa-robot"></i> Bot list</p>
+          <p><i class="fa fa-play"></i> Start/Stop Controls</p>
+          <p><i class="fa fa-coins"></i> Stake / Duration / Volatility settings</p>
+        </div>
+
+        <!-- Chart Panel -->
+        <div class="panel">
+          <h3>Chart Panel</h3>
+          <canvas id="tickChart" style="height:300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle Side Menu
+    function toggleSideMenu(){
+      document.getElementById('sideMenu').classList.toggle('active');
+    }
+
+    // Toggle Dark Mode
+    function toggleDarkMode(){
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Clock
+    function updateClock(){
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toLocaleString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ===== Tick Chart =====
+    const ctx = document.getElementById('tickChart').getContext('2d');
+    const tickData = {
+      labels: [],
+      datasets: [{
+        label: 'R_100',
+        data: [],
+        borderColor: 'var(--chart-line)',
+        fill: false
+      }]
+    };
+    const tickChart = new Chart(ctx, {
+      type: 'line',
+      data: tickData,
+      options: {
+        responsive: true,
+        animation: false,
+        scales: {
+          x: { title: { display: true, text: 'Time' } },
+          y: { title: { display: true, text: 'Price' } }
+        }
+      }
+    });
+
+    // WebSocket to Deriv for live ticks
+    const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
+    ws.onopen = () => { ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 })); };
+    ws.onmessage = e => {
+      const data = JSON.parse(e.data);
+      if (data.tick){
+        const time = new Date(data.tick.epoch * 1000).toLocaleTimeString();
+        const price = data.tick.quote;
+        tickData.labels.push(time);
+        tickData.datasets[0].data.push(price);
+        if (tickData.labels.length > 50){
+          tickData.labels.shift();
+          tickData.datasets[0].data.shift();
+        }
+        tickChart.update();
+      }
+    };
+  </script>
+</body>
+                                                                                           </html>
