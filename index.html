@@ -4,38 +4,63 @@
   <meta charset="UTF-8">
   <title>KIMHUBFX Dashboard</title>
   <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
-    a { text-decoration: none; color: inherit; }
+    body { margin:0; font-family:Arial,sans-serif; background:#f4f4f4; }
+    a { text-decoration:none; color:inherit; }
 
     /* ===== TOP BARS ===== */
-    .top-bar1 { height: 5px; background: #333; }
-    .top-bar2 { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#111; color:white; flex-wrap:wrap;}
-    .brand { font-weight:bold; font-size:1.5em; margin-right:20px;}
-    .main-nav a { margin-right:10px; padding:8px 12px; color:white; background:#222; border-radius:4px; transition:0.2s;}
-    .main-nav a:hover{background:#333;}
-    .nav-buttons{margin-left:auto; display:flex; align-items:center;}
-    .nav-buttons button{margin-left:10px; padding:5px 12px; cursor:pointer; background:#222; color:white; border:none; border-radius:4px;}
-    .nav-buttons .menu-toggle{font-size:1.2em;}
+    .top-bar1, .top-bar2 {
+      display:flex;
+      align-items:center;
+      padding:10px 20px;
+      background:#8B4513; /* brown */
+      color:white;
+      font-weight:bold;
+    }
+
+    /* Top Bar 1: Brand + Login/Signup */
+    .top-bar1{
+      overflow-x:auto;
+      white-space:nowrap;
+      scrollbar-width:none;
+    }
+    .top-bar1::-webkit-scrollbar{ display:none; }
+
+    .top-bar1 .brand{
+      font-size:1.2em; margin-right:20px; flex:0 0 auto;
+    }
+    .top-bar1 button{
+      margin-right:10px; padding:5px 12px;
+      background:#A0522D; color:white; border:none; border-radius:4px; cursor:pointer;
+      flex:0 0 auto;
+    }
+
+    /* Top Bar 2: Navigation Links */
+    .top-bar2 a{
+      margin-right:10px; padding:8px 12px; background:#A0522D; color:white; border-radius:4px;
+      text-decoration:none;
+      transition:0.2s;
+    }
+    .top-bar2 a:hover{ background:#CD853F; }
 
     /* ===== SIDE MENU ===== */
-    .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#222; color:white; overflow-y:auto; transition:0.3s; padding-top:60px; z-index:1000;}
+    .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#8B4513; color:white; overflow-y:auto; transition:0.3s; padding-top:60px; z-index:1000;}
     .side-menu.active{left:0;}
     .side-menu h3{margin:20px; font-size:1.2em;}
-    .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #333;}
-    .side-menu a:hover{background:#333;}
+    .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #A0522D;}
+    .side-menu a:hover{background:#A0522D;}
     .side-menu a i{margin-right:10px;}
 
     /* ===== MAIN CONTENT ===== */
     .content{padding:20px; margin-top:0;}
-    .footer-line{height:2px; background:#333; margin:20px 0;}
+    .footer-line{height:2px; background:#A0522D; margin:20px 0;}
     .clock{text-align:center; font-size:1em; padding:5px; color:#111; background:#eee;}
 
     /* ===== LIVE TRADES TABLE ===== */
     #tradesTable{width:100%; border-collapse:collapse; margin-top:15px;}
     #tradesTable th, #tradesTable td{border:1px solid #ccc; padding:8px; text-align:center;}
-    #tradesTable th{background:#222; color:white;}
+    #tradesTable th{background:#A0522D; color:white;}
     #tradesTable tbody tr{cursor:pointer; transition:0.2s;}
     #tradesTable tbody tr:hover{background:rgba(0,0,0,0.05);}
     .trade-win{background:#d4f8d4;}
@@ -53,32 +78,28 @@
 
     /* ===== DARK MODE ===== */
     .dark-mode{background:#111; color:white;}
-    .dark-mode .top-bar2{background:#222;}
-    .dark-mode .main-nav a, .dark-mode .nav-buttons button{background:#333; color:white;}
     .dark-mode #tickChart{background:#222; border-color:#555;}
   </style>
 </head>
 <body>
 
-  <!-- Top Bars -->
-  <div class="top-bar1"></div>
-  <div class="top-bar2">
+  <!-- Top Bar 1 -->
+  <div class="top-bar1">
     <div class="brand">KIMHUBFX</div>
-    <div class="main-nav">
-      <a href="#">Dashboard</a>
-      <a href="/pages/bot-builder.html">Bot Builder</a>
-      <a href="/pages/dtrader.html">DTrader</a>
-      <a href="/pages/analysis.html">Analysis Tool</a>
-      <a href="/pages/dp-tool.html">DP Tool</a>
-      <a href="/pages/free-bots.html">Free Bots</a>
-      <a href="/pages/copy-trading.html">Copy Trading</a>
-      <a href="/pages/risk-manager.html">Risk Manager</a>
-    </div>
-    <div class="nav-buttons">
-      <button onclick="location.href='login.html'">LOGIN</button>
-      <button onclick="location.href='signup.html'">SIGNUP</button>
-      <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
-    </div>
+    <button onclick="location.href='login.html'">LOGIN</button>
+    <button onclick="location.href='signup.html'">SIGNUP</button>
+  </div>
+
+  <!-- Top Bar 2 -->
+  <div class="top-bar2">
+    <a href="#">Dashboard</a>
+    <a href="/pages/bot-builder.html">Bot Builder</a>
+    <a href="/pages/dtrader.html">DTrader</a>
+    <a href="/pages/analysis.html">Analysis Tool</a>
+    <a href="/pages/dp-tool.html">DP Tool</a>
+    <a href="/pages/free-bots.html">Free Bots</a>
+    <a href="/pages/copy-trading.html">Copy Trading</a>
+    <a href="/pages/risk-manager.html">Risk Manager</a>
   </div>
 
   <!-- Side Menu -->
@@ -99,7 +120,7 @@
   <!-- Main Content -->
   <div class="content">
     <h1>Welcome to KIMHUBFX Dashboard</h1>
-    <p>Use the top bar or side menu to navigate.</p>
+    <p>Use the side menu to navigate.</p>
 
     <div class="footer-line"></div>
     <div class="clock" id="clock">Loading time...</div>
@@ -138,8 +159,7 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // ===== MENU & DARK MODE =====
-    function toggleMenu(){ document.getElementById('sideMenu').classList.toggle('active'); }
+    // ===== DARK MODE =====
     function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
 
     // ===== CLOCK =====
@@ -230,4 +250,4 @@
     window.onclick=function(e){ const modal=document.getElementById('tradeModal'); if(e.target===modal) closeModal(); }
   </script>
 </body>
-  </html>
+                         </html>
