@@ -1,17 +1,10 @@
-// Tick Log
 const tickLog = document.getElementById('tickLog');
-function logTick(msg){
-  const p = document.createElement('p');
-  p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-  tickLog.prepend(p);
-  if(tickLog.childNodes.length > 50){ tickLog.removeChild(tickLog.lastChild); }
-}
+const symbolSelect = document.getElementById('symbol');
 
-// Helper Functions for indicators
+// ===== Helper functions for indicators =====
 function SMA(data, period){
   if(data.length < period) return null;
-  const sum = data.slice(-period).reduce((a,b)=>a+b,0);
-  return sum/period;
+  return data.slice(-period).reduce((a,b)=>a+b,0)/period;
 }
 
 function EMA(data, period, prevEMA=null){
@@ -29,7 +22,7 @@ function BollingerBands(data, period=20, multiplier=2){
   return {upper: mean + multiplier*std, lower: mean - multiplier*std, middle: mean};
 }
 
-// Chart Setup
+// ===== Chart Setup =====
 const ctx = document.getElementById('tickChart').getContext('2d');
 const tickData = {
   labels: [],
@@ -41,33 +34,50 @@ const tickData = {
     {label:'BB Lower', data:[], borderColor:'#4caf50', fill:false}
   ]
 };
+
 const tickChart = new Chart(ctx,{
   type:'line',
   data: tickData,
-  options: {animation:false, responsive:true, scales:{x:{title:{display:true,text:'Time'}},y:{title:{display:true,text:'Price'}}}}
+  options: {
+    animation:false,
+    responsive:true,
+    scales:{x:{title:{display:true,text:'Time'}}, y:{title:{display:true,text:'Price'}}}
+  }
 });
 
-// WebSocket
 let ws;
 let prevEMA = null;
+
+// ===== Tick Logger =====
+function logTick(msg){
+  const p = document.createElement('p');
+  p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  tickLog.prepend(p);
+  if(tickLog.childNodes.length > 50) tickLog.removeChild(tickLog.lastChild);
+}
+
+// ===== Connect to Volatility Index Ticks =====
 function connectTicks(symbol){
   if(ws) ws.close();
   tickData.labels = [];
   tickData.datasets.forEach(ds => ds.data = []);
   prevEMA = null;
   tickChart.update();
-  
+  logTick(`Connecting to ${symbol}...`);
+
   ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
-  ws.onopen = () => { ws.send(JSON.stringify({ticks:symbol,subscribe:1})); logTick(`Connected to ${symbol}`); };
+  ws.onopen = () => ws.send(JSON.stringify({ticks:symbol,subscribe:1}));
+
   ws.onmessage = e => {
     const data = JSON.parse(e.data);
     if(data.tick){
       const time = new Date(data.tick.epoch*1000).toLocaleTimeString();
       const price = data.tick.quote;
+
       tickData.labels.push(time);
       tickData.datasets[0].data.push(price);
 
-      // Indicators
+      // Calculate indicators
       const sma = SMA(tickData.datasets[0].data, 20);
       tickData.datasets[1].data.push(sma);
       prevEMA = EMA(tickData.datasets[0].data, 20, prevEMA);
@@ -76,7 +86,7 @@ function connectTicks(symbol){
       tickData.datasets[3].data.push(bb ? bb.upper : null);
       tickData.datasets[4].data.push(bb ? bb.lower : null);
 
-      if(tickData.labels.length>50){
+      if(tickData.labels.length > 50){
         tickData.labels.shift();
         tickData.datasets.forEach(ds => ds.data.shift());
       }
@@ -88,10 +98,8 @@ function connectTicks(symbol){
   ws.onclose = () => logTick(`Disconnected from ${symbol}`);
 }
 
-// Symbol change
-document.getElementById('symbol').addEventListener('change', e => {
-  connectTicks(e.target.value);
-});
+// ===== Change Symbol =====
+symbolSelect.addEventListener('change', e => connectTicks(e.target.value));
 
-// Connect initial symbol
-connectTicks(document.getElementById('symbol').value);
+// ===== Initial Connection =====
+connectTicks(symbolSelect.value);
