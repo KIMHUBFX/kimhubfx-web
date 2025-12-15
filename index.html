@@ -6,75 +6,98 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#f4f4f4; }
+    body { margin:0; font-family:Arial,sans-serif; background:#8B4513; color:white; }
     a { text-decoration:none; color:inherit; }
 
     /* ===== TOP BARS ===== */
     .top-bar1, .top-bar2 {
       display:flex;
       align-items:center;
-      padding:10px 20px;
-      background:#8B4513; /* brown */
+      padding:12px 20px;
+      background:#8B4513;
       color:white;
       font-weight:bold;
     }
 
-    /* Top Bar 1: Brand + Login/Signup */
+    /* Top Bar 1: Menu + Brand + Login/Signup */
     .top-bar1{
       overflow-x:auto;
       white-space:nowrap;
       scrollbar-width:none;
     }
     .top-bar1::-webkit-scrollbar{ display:none; }
-
+    .top-bar1 .menu-toggle{
+      margin-right:15px;
+      flex:0 0 auto;
+      font-size:1.2em;
+      cursor:pointer;
+      color:#D2B48C;
+    }
     .top-bar1 .brand{
       font-size:1.2em; margin-right:20px; flex:0 0 auto;
     }
     .top-bar1 button{
-      margin-right:10px; padding:5px 12px;
+      margin-right:10px; padding:6px 14px;
       background:#A0522D; color:white; border:none; border-radius:4px; cursor:pointer;
-      flex:0 0 auto;
+      flex:0 0 auto; transition:0.2s;
     }
+    .top-bar1 button:hover{ background:#CD853F; }
 
-    /* Top Bar 2: Navigation Links */
+    /* Top Bar 2: Scrollable Links */
+    .top-bar2 {
+      display:flex;
+      align-items:center;
+      padding:12px 20px;
+      background:#8B4513;
+      color:white;
+      overflow-x:auto;
+      white-space:nowrap;
+      scrollbar-width:none;
+    }
+    .top-bar2::-webkit-scrollbar{ display:none; }
     .top-bar2 a{
-      margin-right:10px; padding:8px 12px; background:#A0522D; color:white; border-radius:4px;
+      margin-right:10px;
+      padding:8px 16px;
+      background:#A0522D;
+      color:white;
+      border-radius:4px;
       text-decoration:none;
+      flex:0 0 auto;
       transition:0.2s;
     }
     .top-bar2 a:hover{ background:#CD853F; }
 
     /* ===== SIDE MENU ===== */
-    .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#8B4513; color:white; overflow-y:auto; transition:0.3s; padding-top:60px; z-index:1000;}
+    .side-menu{position:fixed; top:0; left:-250px; width:250px; height:100%; background:#A0522D; color:white; overflow-y:auto; transition:0.3s; padding-top:60px; z-index:1000;}
     .side-menu.active{left:0;}
     .side-menu h3{margin:20px; font-size:1.2em;}
-    .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #A0522D;}
-    .side-menu a:hover{background:#A0522D;}
+    .side-menu a{display:flex; align-items:center; padding:12px 20px; color:white; border-bottom:1px solid #8B4513;}
+    .side-menu a:hover{background:#8B4513;}
     .side-menu a i{margin-right:10px;}
 
     /* ===== MAIN CONTENT ===== */
     .content{padding:20px; margin-top:0;}
     .footer-line{height:2px; background:#A0522D; margin:20px 0;}
-    .clock{text-align:center; font-size:1em; padding:5px; color:#111; background:#eee;}
+    .clock{text-align:center; font-size:1em; padding:5px; background:#D2691E; color:white;}
 
     /* ===== LIVE TRADES TABLE ===== */
-    #tradesTable{width:100%; border-collapse:collapse; margin-top:15px;}
-    #tradesTable th, #tradesTable td{border:1px solid #ccc; padding:8px; text-align:center;}
+    #tradesTable{width:100%; border-collapse:collapse; margin-top:15px; background:#D2691E;}
+    #tradesTable th, #tradesTable td{border:1px solid #8B4513; padding:8px; text-align:center;}
     #tradesTable th{background:#A0522D; color:white;}
     #tradesTable tbody tr{cursor:pointer; transition:0.2s;}
-    #tradesTable tbody tr:hover{background:rgba(0,0,0,0.05);}
-    .trade-win{background:#d4f8d4;}
-    .trade-loss{background:#f8d4d4;}
+    #tradesTable tbody tr:hover{background:#CD853F;}
+    .trade-win{background:#d4f8d4; color:#111;}
+    .trade-loss{background:#f8d4d4; color:#111;}
     .trade-call i{color:green; margin-right:5px;}
     .trade-put i{color:red; margin-right:5px;}
 
     /* ===== TICK CHART ===== */
-    #tickChart{width:100%; height:300px; margin-top:20px; background:#fff; border:1px solid #ccc;}
+    #tickChart{width:100%; height:300px; margin-top:20px; background:#D2691E; border:1px solid #8B4513;}
 
     /* ===== MODAL ===== */
     #tradeModal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;}
-    #tradeModalContent{background:white; padding:20px; border-radius:8px; width:400px; max-width:90%; position:relative;}
-    #tradeModalContent span.closeModal{position:absolute; top:10px; right:15px; cursor:pointer;}
+    #tradeModalContent{background:#A0522D; padding:20px; border-radius:8px; width:400px; max-width:90%; position:relative; color:white;}
+    #tradeModalContent span.closeModal{position:absolute; top:10px; right:15px; cursor:pointer; color:white;}
 
     /* ===== DARK MODE ===== */
     .dark-mode{background:#111; color:white;}
@@ -85,6 +108,7 @@
 
   <!-- Top Bar 1 -->
   <div class="top-bar1">
+    <div class="menu-toggle" onclick="toggleSideMenu()">☰</div>
     <div class="brand">KIMHUBFX</div>
     <button onclick="location.href='login.html'">LOGIN</button>
     <button onclick="location.href='signup.html'">SIGNUP</button>
@@ -159,6 +183,12 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    // ===== TOGGLE SIDE MENU =====
+    function toggleSideMenu(){
+      const sideMenu = document.getElementById('sideMenu');
+      sideMenu.classList.toggle('active');
+    }
+
     // ===== DARK MODE =====
     function toggleDarkMode(){ document.body.classList.toggle('dark-mode'); }
 
@@ -250,4 +280,4 @@
     window.onclick=function(e){ const modal=document.getElementById('tradeModal'); if(e.target===modal) closeModal(); }
   </script>
 </body>
-                         </html>
+  </html>
